@@ -1,0 +1,22 @@
+{
+  "name": "@hash_yield/contracts",
+  "version": "0.0.0",
+  "description": "Hash Yield contracts",
+  "scripts": {
+    "build:scarb": "scarb build",
+    "format": "scarb fmt",
+    "format:check": "scarb fmt --check",
+    "format:cairo": "bun format",
+    "format:check:cairo": "bun format:check",
+    "lint:cairo": "echo 'No Cairo linting available'",
+    "lint:check:cairo": "echo 'No Cairo linting available'",
+    "test": "scarb test",
+    "test:cairo": "bun test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "starknet": "8.5.4"
+  }
+}
