@@ -13,6 +13,7 @@ export interface AllocationData {
   value: number;
   color: string;
   protocol: string;
+  [key: string]: string | number;
 }
 
 export enum TransactionState {

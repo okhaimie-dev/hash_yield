@@ -40,7 +40,7 @@ export default function Home() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 mb-8 text-xs font-bold tracking-widest text-[#f7931a] uppercase">
             <Zap className="w-3 h-3 fill-current" /> Starknet Native Yield
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400">
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-8 bg-clip-text text-transparent bg-linear-to-b from-white to-slate-400">
             Bitcoin Yield <br /> Without Compromise.
           </h1>
           <p className="text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl mx-auto">
@@ -273,7 +273,7 @@ export default function Home() {
           <DepositCard sharePrice={vaultStats.sharePrice} />
           <div className="mt-6 bg-[#f7931a]/5 border border-[#f7931a]/10 rounded-2xl p-6">
             <div className="flex gap-3">
-              <AlertCircle className="w-5 h-5 text-[#f7931a] flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-[#f7931a] shrink-0" />
               <div>
                 <h4 className="text-sm font-bold text-[#f7931a] mb-1">
                   Vault Mechanism
