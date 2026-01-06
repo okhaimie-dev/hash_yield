@@ -1,0 +1,49 @@
+VaultTest
+├── When vault is initialized
+│   ├── It should have zero totalSupply and totalAssets.
+│   └── It should set asset to the configured WBTC token.
+├── When depositing assets
+│   ├── When assets > 0 and vault empty
+│   │   ├── It should mint equal shares (1:1 if empty) to receiver.
+│   │   └── It should update totalAssets by the deposited amount.
+│   ├── When assets > 0 and vault has existing deposits
+│   │   ├── It should mint shares according to exchange rate.
+│   │   ├── It should round down shares in favor of vault if not exact.
+│   │   └── It should emit a Deposit event with correct params.
+│   └── When assets = 0
+│       └── It should revert, because we shouldn't allow zero deposit.
+├── When minting shares
+│   ├── When shares > 0 and vault empty
+│   │   └── It should pull equivalent assets (1:1) from user and mint shares.
+│   ├── When shares > 0 and vault non-empty
+│   │   ├── It should pull correct (rounded up) assets.
+│   │   └── It should emit Deposit event with caller, receiver, assets, shares.
+│   └── When shares = 0
+│       └── It should revert (zero shares not allowed).
+├── When withdrawing assets
+│   ├── When owner has sufficient shares
+│   │   ├── It should burn the correct number of shares.
+│   │   ├── It should round up share burn if needed (favor vault).
+│   │   └── It should transfer the assets to receiver.
+│   ├── When caller is not owner but approved
+│   │   └── It should allow withdrawal using owner's allowance.
+│   ├── When assets = 0
+│   │   └── It should revert (cannot withdraw zero).
+│   └── When requested > available (or > maxWithdraw)
+│       └── It should revert (not enough balance or paused/limit).
+├── When redeeming shares
+│   ├── When owner has that many shares
+│   │   ├── It should burn the shares.
+│   │   ├── It should transfer assets (rounded down) to receiver.
+│   │   └── It should emit Withdraw event with caller, receiver, owner, assets, shares.
+│   ├── When caller not owner but approved
+│   │   └── It should redeem on owner's behalf.
+│   └── When shares > owner balance
+│       └── It should revert (balance too low).
+├── When using convertToShares/convertToAssets
+│   ├── It should convert consistently: convertToAssets(convertToShares(x)) ≤ x.
+│   └── It should preserve inverses within rounding: for any x assets, previewDeposit(x) then previewRedeem(result) ≈ x.
+└── When vault is paused
+    ├── It should block deposits and mints.
+    ├── It should (depending on design) block or allow withdrawals.
+    └── It should allow only owner or guardian to pause/unpause.

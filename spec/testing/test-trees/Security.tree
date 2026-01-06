@@ -1,0 +1,23 @@
+SecurityTest
+├── When deposit amount is extremely small
+│   ├── If it would yield 0 shares, it should revert to prevent donation.
+│   └── The vault should not accept donations inadvertently.
+├── When attacker attempts inflation attack
+│   ├── Given attacker deposits minimal and donates large amount to vault
+│   └── Victim deposit after should still receive >0 shares (offset active) and attacker gains nothing.
+├── When non-admin calls admin functions
+│   ├── Calling setStrategy by stranger should revert (Unauthorized).
+│   ├── Calling pause or unpause by stranger should revert.
+│   └── Calling emergencyWithdraw by stranger should revert.
+├── When admin misconfigures
+│   ├── Setting strategy with mismatched asset should revert.
+│   └── Setting null strategy outside emergency context (if not allowed) should revert or be handled.
+├── When ERC20 functions are used
+│   ├── transfer of vault shares between users should update balances.
+│   ├── allowance on vault shares should allow third-party redeem.
+│   └── totalSupply always equals sum of balances (no phantom shares).
+└── Invariant checks throughout operations
+    ├── After any deposit or withdrawal, totalAssets equals vault+strategy balance.
+    ├── Share price never decreases unless a loss event occurs.
+    ├── No user's balance goes negative or above totalSupply.
+    └── Rounding error at most 1 wei per operation (accumulated dust ≤ #operations).
