@@ -1,0 +1,25 @@
+IntegrationTest
+├── When a user deposits into vault with strategy active
+│   ├── Vault should transfer assets to strategy (none left in vault).
+│   ├── Strategy should deposit into external pool (pool balance increases).
+│   └── User receives correct vault shares.
+├── When multiple users deposit, then external yield accrues
+│   ├── Vault.totalAssets should increase as strategy value grows.
+│   ├── Users' share count stays same but convertToAssets for their shares increases.
+│   └── No manual action required for yield (auto accrual).
+├── When a user withdraws after yield accrual
+│   ├── They should be able to withdraw principal + their share of profit.
+│   └── Vault should withdraw from strategy the needed amount.
+├── When one user withdraws leaving others
+│   ├── Remaining users' share value remains correct (no extra loss).
+│   └── Total assets and supply reduce proportionally.
+├── When strategy is switched to new strategy
+│   ├── All assets should move from old strategy to new.
+│   ├── Vault.totalAssets remains continuous (no drop).
+│   ├── No new shares are created or destroyed in switch.
+│   └── Users' balances and totalSupply remain same.
+└── When emergencyWithdraw is triggered mid-yield
+    ├── Vault should pull all assets back from strategy.
+    ├── Users can redeem their shares directly from vault now.
+    ├── Any unrecoverable assets remain in strategy (loss).
+    └── Each user gets at most their pro-rata of recovered assets (loss shared).

@@ -1,0 +1,27 @@
+StrategyTest
+├── When depositing into strategy
+│   ├── It should accept assets only from Vault.
+│   ├── It should forward them to the external protocol (Vesu pool).
+│   ├── It should increase its internal asset count or external balance.
+│   └── It should return the amount invested or shares gained.
+├── When withdrawing from strategy
+│   ├── It should only allow Vault to call.
+│   ├── If assets available, it should withdraw requested amount.
+│   ├── It should transfer assets back to Vault.
+│   └── It should report if full amount not retrieved (e.g., slippage).
+├── When reporting totalAssets
+│   ├── It should reflect current underlying in pool (principal + yield).
+│   └── It should equal Vault.totalAssets minus any idle in vault.
+├── When harvest is called
+│   ├── If profit since last, it should calculate profit > 0.
+│   ├── If loss since last, it should report loss > 0.
+│   ├── It should not transfer assets in v0 (just reporting).
+│   └── It should update lastReported to current.
+├── When withdrawAll is called
+│   ├── It should redeem all assets from the protocol.
+│   ├── It should transfer all to Vault.
+│   └── It should result in strategy.totalAssets() = 0.
+└── When emergencyWithdraw is called
+    ├── It should attempt to withdraw all, ignoring normal limits.
+    ├── If successful, strategy holds 0 and Vault receives assets.
+    └── If partial, it should still return what was recovered (no revert).
