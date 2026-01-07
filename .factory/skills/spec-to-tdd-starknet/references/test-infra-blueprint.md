@@ -10,11 +10,9 @@ This file encodes best practices inspired by a high-quality Starknet repo. Use t
 - `SPEC_DOCS_DIR`: manifest, invariants, risk matrix, pre/post conditions
 
 ## Snforge Setup
-- Use `snforge_std = "0.51.1"` (or latest stable >=0.50.0) in `dev-dependencies`.
+- Use `snforge_std` in `dev-dependencies`.
 - Expose `snforge test` via `[scripts]` in Scarb.
 - Allow prebuilt plugin for snforge.
-- Create `tests/lib.cairo` to import test modules from `tests/` directory.
-- Each test module should be declared in `tests/lib.cairo` (e.g., `mod unit { mod test_example; }`).
 
 ## Exemplar-Derived Patterns
 - **Centralized test utilities**: a `test_utils` module that exposes constants, deployment helpers, role setup helpers, and cheatcode wrappers (e.g., caller impersonation, time/block manipulation).

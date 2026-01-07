@@ -1,11 +1,10 @@
 # Repo Conventions
 
 ## Paths (Default Layout - Override When Repo Differs)
-- `src/contracts/interfaces.cairo` for traits/interfaces module
-- `src/contracts/abstracts.cairo` for abstract shells module
-- `src/contracts/mocks.cairo` for mocks module
-- `src/testing/helpers.cairo` for test helpers module
-- `src/testing/fixtures.cairo` for fixtures module
+- `src/contracts/interfaces/` for traits/interfaces
+- `src/contracts/abstracts/` for abstract shells
+- `src/contracts/mocks/` for mocks
+- `src/testing/` for helpers and fixtures
 - `tests/` for test files
 - `SPEC_DOCS_DIR` for manifest + invariants + risk matrix
 - `BTT_DIR` for tree files

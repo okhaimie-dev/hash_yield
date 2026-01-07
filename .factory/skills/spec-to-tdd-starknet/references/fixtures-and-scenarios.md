@@ -17,7 +17,7 @@
 - "Emergency path"
 
 ## Where To Put Them
-- `src/testing/fixtures.cairo` module for reusable setups.
+- `src/testing/fixtures/` for reusable setups.
 - Tests should compose fixtures rather than duplicating setup logic.
 
 ## Exemplar-Style Patterns
