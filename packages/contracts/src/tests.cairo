@@ -10,20 +10,14 @@ pub mod helper;
 
 // Mock contracts for testing
 pub mod mocks;
-// Unit tests (to be added in Gate 4)
-// pub mod vault_basic_test;
-// pub mod vault_edgecases_test;
+pub mod strategy_test;
 
-// Integration tests (to be added in Gate 4)
-// pub mod strategy_integration_test;
-// pub mod emergency_test;
+// Unit tests
+pub mod vault_test;
+// Integration tests (placeholder - implement in Gate 4 part 2)
+// pub mod integration_test;
 
-// Security tests (to be added in Gate 4)
-// pub mod inflation_attack_test;
-// pub mod reentrancy_test;
-// pub mod strategy_validation_test;
-
-// Property tests (to be added in Gate 4)
-// pub mod prop_invariants_test;
+// Security tests (placeholder - implement in Gate 4 part 2)
+// pub mod security_test;
 
 
