@@ -111,3 +111,81 @@ pub trait ICore<TContractState> {
 - Use `#[derive(Copy, Drop, Serde, PartialEq, Hash)]` for key structs
 - Implement `StorePacking` for storage-optimized types
 - Implement `Zero` trait for types that need zero values
+
+## Type Aliases Pattern (Starknet-Staking Style)
+```cairo
+pub type Commission = u16;
+pub type Amount = u128;
+pub type Index = u128;
+pub type Epoch = u64;
+pub type PublicKey = felt252;
+pub type BlockNumber = u64;
+```
+
+## Structured Error Pattern (Starknet-Staking Style)
+Use enums with `Describable` trait for human-readable errors:
+
+```cairo
+use starkware_utils::errors::{Describable, ErrorDisplay};
+
+#[derive(Drop)]
+pub enum Error {
+    AMOUNT_LESS_THAN_MIN_STAKE,
+    STAKER_EXISTS,
+    STAKER_NOT_EXISTS,
+    CALLER_CANNOT_INCREASE_STAKE,
+    CONTRACT_IS_PAUSED,
+}
+
+impl DescribableError of Describable<Error> {
+    fn describe(self: @Error) -> ByteArray {
+        match self {
+            Error::AMOUNT_LESS_THAN_MIN_STAKE => "Amount is less than min stake",
+            Error::STAKER_EXISTS => "Staker already exists",
+            Error::STAKER_NOT_EXISTS => "Staker does not exist",
+            Error::CALLER_CANNOT_INCREASE_STAKE => "Caller cannot increase stake",
+            Error::CONTRACT_IS_PAUSED => "Contract is paused",
+        }
+    }
+}
+```
+
+Then compose errors across modules:
+```cairo
+#[derive(Drop)]
+pub enum GenericError {
+    StakingError: StakingError,
+    PoolError: PoolError,
+    // Shared errors
+    AMOUNT_IS_ZERO,
+    ZERO_ADDRESS,
+}
+```
+
+## lib.cairo Visibility Pattern
+```cairo
+pub mod staking;
+pub mod pool;
+pub(crate) mod constants;      // Internal constants
+pub mod errors;
+pub mod types;
+
+#[cfg(test)]
+pub(crate) mod event_test_utils;  // Test-only modules
+#[cfg(test)]
+mod flow_test;
+#[cfg(test)]
+pub(crate) mod test_utils;
+```
+
+## Feature Flags for Tests
+```cairo
+// In lib.cairo
+#[cfg(test)]
+#[cfg(feature: 'fork_test')]
+pub(crate) mod fork_test;
+
+// In Scarb.toml
+[features]
+fork_test = []
+```

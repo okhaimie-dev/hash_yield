@@ -8,11 +8,15 @@ description: Build a TDD-ready Starknet/Cairo repo from a detailed protocol spec
 ## Overview
 This skill turns a detailed protocol spec into a **TDD-ready** Cairo repo: interface/abstract scaffolding, comprehensive testing infrastructure, BTT trees, and placeholder tests that compile and validate coverage before any implementation begins.
 
-**Key Patterns (Ekubo-Inspired)**:
+**Key Patterns (Ekubo + Starknet-Staking Inspired)**:
 - Co-located tests under `src/tests/` with `#[cfg(test)]`
-- Deployer trait pattern for contract deployment in tests
-- Action/Result enums for complex test flows
-- Component-based architecture for reusable logic
+- snforge deploy helpers using `declare().unwrap().contract_class().deploy()`
+- Action/Result enums for complex test flows (Ekubo)
+- Flow-based testing with `SystemState` abstraction (Starknet-Staking)
+- Event test utilities module with per-event assertion helpers
+- Structured errors with `Describable` trait
+- Type aliases for domain concepts (Amount, Epoch, Commission)
+- Test constants module with addresses as `'NAME'.try_into().unwrap()`
 
 ## Progressive Disclosure Map
 Load only what is needed:

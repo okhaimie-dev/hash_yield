@@ -269,3 +269,118 @@ impl i129Zero of Zero<i129> { fn zero() -> i129 { i129 { mag: 0, sign: false } }
 - Co-located: `src/tests/<module>_test.cairo`
 - Separate: `tests/unit/test_<module>.cairo`
 - Each test includes `// TEST-ID: TEST-...` marker
+
+## Flow-Based Testing Pattern (Starknet-Staking Style)
+For complex protocols, use flow-based testing with a `SystemState` abstraction:
+
+```cairo
+#[derive(Drop, Copy)]
+pub(crate) struct SystemState {
+    pub staking: StakingState,
+    pub reward_supplier: RewardSupplierState,
+    pub attestation: AttestationState,
+    pub token: Token,
+}
+
+pub(crate) trait FlowTrait<T> {
+    fn test(self: T, ref system: SystemState);
+}
+
+#[derive(Drop, Copy)]
+pub(crate) struct BasicStakeFlow {}
+
+impl BasicStakeFlowImpl of FlowTrait<BasicStakeFlow> {
+    fn test(self: BasicStakeFlow, ref system: SystemState) {
+        let staker = system.new_staker(amount: stake_amount);
+        system.stake(:staker, amount: stake_amount, pool_enabled: true);
+        system.advance_epochs(n: 5);
+        system.staker_exit_intent(:staker);
+        // ... assertions
+    }
+}
+```
+
+## Event Test Utilities Pattern (Starknet-Staking Style)
+Create dedicated event assertion helpers:
+
+```cairo
+use snforge_std::cheatcodes::events::{Event, EventSpy, EventSpyTrait};
+
+pub(crate) fn assert_new_staker_event(
+    spied_event: @(ContractAddress, Event),
+    staker_address: ContractAddress,
+    reward_address: ContractAddress,
+    self_stake: Amount,
+) {
+    let expected_event = StakingEvents::NewStaker {
+        staker_address, reward_address, self_stake,
+    };
+    assert_expected_event_emitted(
+        :spied_event,
+        :expected_event,
+        expected_event_selector: @selector!("NewStaker"),
+        expected_event_name: "NewStaker",
+    );
+}
+```
+
+## Test Constants Module Pattern
+Centralize test constants in a dedicated module:
+
+```cairo
+pub(crate) mod constants {
+    use starknet::ContractAddress;
+
+    pub const INITIAL_SUPPLY: Amount = 10000000000 * STRK_IN_FRIS;
+    pub const MIN_STAKE: Amount = 20000 * STRK_IN_FRIS;
+    pub const STAKE_AMOUNT: Amount = 100000 * STRK_IN_FRIS;
+    pub const COMMISSION: Commission = 500;
+
+    pub(crate) const STAKER_ADDRESS: ContractAddress = 'STAKER_ADDRESS'.try_into().unwrap();
+    pub(crate) const POOL_MEMBER_ADDRESS: ContractAddress = 'POOL_MEMBER_ADDRESS'.try_into().unwrap();
+    pub(crate) const GOVERNANCE_ADMIN: ContractAddress = 'GOVERNANCE_ADMIN'.try_into().unwrap();
+}
+```
+
+## Cheatcode Helpers
+Use snforge cheatcodes for test setup:
+
+```cairo
+use snforge_std::{
+    cheat_caller_address, CheatSpan,
+    start_cheat_block_number_global,
+    start_cheat_block_timestamp_global,
+};
+
+pub(crate) fn cheat_caller_address_once(
+    contract_address: ContractAddress,
+    caller_address: ContractAddress,
+) {
+    cheat_caller_address(:contract_address, :caller_address, span: CheatSpan::TargetCalls(1));
+}
+
+pub(crate) fn advance_block_number_global(blocks: u64) {
+    let current = get_block_number();
+    start_cheat_block_number_global(block_number: current + blocks);
+}
+```
+
+## Fund and Approve Pattern
+```cairo
+pub(crate) fn fund(target: ContractAddress, amount: Amount, token: Token) {
+    let token_dispatcher = IERC20Dispatcher { contract_address: token.contract_address() };
+    let curr_balance = token_dispatcher.balance_of(account: target);
+    set_balance(:target, new_balance: curr_balance + amount.into(), :token);
+}
+
+pub(crate) fn approve(
+    owner: ContractAddress,
+    spender: ContractAddress,
+    amount: Amount,
+    token_address: ContractAddress,
+) {
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    cheat_caller_address_once(contract_address: token_address, caller_address: owner);
+    token_dispatcher.approve(:spender, amount: amount.into());
+}
+```
