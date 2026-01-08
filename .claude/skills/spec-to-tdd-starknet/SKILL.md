@@ -8,15 +8,21 @@ description: Build a TDD-ready Starknet/Cairo repo from a detailed protocol spec
 ## Overview
 This skill turns a detailed protocol spec into a **TDD-ready** Cairo repo: interface/abstract scaffolding, comprehensive testing infrastructure, BTT trees, and placeholder tests that compile and validate coverage before any implementation begins.
 
+**Key Patterns (Ekubo-Inspired)**:
+- Co-located tests under `src/tests/` with `#[cfg(test)]`
+- Deployer trait pattern for contract deployment in tests
+- Action/Result enums for complex test flows
+- Component-based architecture for reusable logic
+
 ## Progressive Disclosure Map
 Load only what is needed:
 - **Workflow gates**: `references/workflow-gates.md`
-- **BTT format**: `references/btt-format.md`
-- **Test infra blueprint**: `references/test-infra-blueprint.md`
+- **BTT format**: `references/btt-format.md` (manual BTT application for Cairo)
+- **Test infra blueprint**: `references/test-infra-blueprint.md` (Ekubo patterns)
 - **Fixtures/scenarios**: `references/fixtures-and-scenarios.md`
-- **Mock patterns**: `references/mocks-patterns.md`
+- **Mock patterns**: `references/mocks-patterns.md` (MockERC20, Locker, Extension)
 - **Assertions/events**: `references/assertions-and-events.md`
-- **Repo conventions**: `references/repo-conventions.md`
+- **Repo conventions**: `references/repo-conventions.md` (Ekubo-style layout)
 - **Naming rules**: `references/naming-rules.md`
 - **Config guidance**: `references/snforge-config.md`
 - **Spec -> tests mapping**: `references/mapping-spec-to-tests.md`
