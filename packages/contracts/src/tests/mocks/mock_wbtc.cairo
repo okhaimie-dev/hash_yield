@@ -30,24 +30,24 @@ pub mod MockWBTC {
         balances: Map<ContractAddress, u256>,
         allowances: Map<(ContractAddress, ContractAddress), u256>,
         total_supply: u256,
-        name: felt252,
-        symbol: felt252,
+        name: ByteArray,
+        symbol: ByteArray,
     }
 
     #[constructor]
     fn constructor(ref self: ContractState) {
-        self.name.write('Wrapped BTC');
-        self.symbol.write('WBTC');
+        self.name.write("Wrapped BTC");
+        self.symbol.write("WBTC");
         self.total_supply.write(0);
     }
 
     #[abi(embed_v0)]
     impl IERC20Impl of IERC20<ContractState> {
-        fn name(self: @ContractState) -> felt252 {
+        fn name(self: @ContractState) -> ByteArray {
             self.name.read()
         }
 
-        fn symbol(self: @ContractState) -> felt252 {
+        fn symbol(self: @ContractState) -> ByteArray {
             self.symbol.read()
         }
 

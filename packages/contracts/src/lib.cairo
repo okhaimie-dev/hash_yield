@@ -12,17 +12,19 @@
 // -----------------------------------------------------------------------------
 // Core Contract Modules
 // -----------------------------------------------------------------------------
-// pub mod vault;
-// pub mod strategies {
-//     pub mod lending_strategy_v0;
-// }
+pub mod vault;
+pub mod strategies {
+    pub mod lending_strategy_v0;
+}
 
 // -----------------------------------------------------------------------------
 // Interface/Trait Definitions
 // -----------------------------------------------------------------------------
 pub mod interfaces {
     pub mod erc20;
+    pub mod erc4626;
     pub mod strategy;
+    pub mod vault;
     pub mod vesu_vtoken;
 }
 

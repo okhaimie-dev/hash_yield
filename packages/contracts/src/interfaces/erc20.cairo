@@ -10,10 +10,10 @@ use starknet::ContractAddress;
 #[starknet::interface]
 pub trait IERC20<TContractState> {
     /// Returns the name of the token
-    fn name(self: @TContractState) -> felt252;
+    fn name(self: @TContractState) -> ByteArray;
 
     /// Returns the symbol of the token
-    fn symbol(self: @TContractState) -> felt252;
+    fn symbol(self: @TContractState) -> ByteArray;
 
     /// Returns the number of decimals
     fn decimals(self: @TContractState) -> u8;
