@@ -1,32 +1,48 @@
-/// Interface representing `HelloContract`.
-/// This interface allows modification and retrieval of the contract balance.
-#[starknet::interface]
-pub trait IHelloStarknet<TContractState> {
-    /// Increase contract balance.
-    fn increase_balance(ref self: TContractState, amount: felt252);
-    /// Retrieve contract balance.
-    fn get_balance(self: @TContractState) -> felt252;
+// =============================================================================
+// Hash Yield - Starknet ERC-4626 BTC Vault
+// =============================================================================
+// A yield-generating vault for WBTC on Starknet with pluggable strategies.
+//
+// Architecture:
+// - Vault: ERC-4626 compliant vault accepting WBTC deposits
+// - Strategy: Pluggable yield strategies (IStrategy interface)
+// - LendingStrategyV0: Initial strategy using Vesu V2 lending
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// Core Contract Modules
+// -----------------------------------------------------------------------------
+// pub mod vault;
+// pub mod strategies {
+//     pub mod lending_strategy_v0;
+// }
+
+// -----------------------------------------------------------------------------
+// Interface/Trait Definitions
+// -----------------------------------------------------------------------------
+pub mod interfaces {
+    pub mod erc20;
+    pub mod strategy;
+    pub mod vesu_vtoken;
 }
 
-/// Simple contract for managing balance.
-#[starknet::contract]
-mod HelloStarknet {
-    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+// -----------------------------------------------------------------------------
+// Error Definitions
+// -----------------------------------------------------------------------------
+pub mod errors;
 
-    #[storage]
-    struct Storage {
-        balance: felt252,
-    }
+// -----------------------------------------------------------------------------
+// Event Definitions
+// -----------------------------------------------------------------------------
+pub mod events;
 
-    #[abi(embed_v0)]
-    impl HelloStarknetImpl of super::IHelloStarknet<ContractState> {
-        fn increase_balance(ref self: ContractState, amount: felt252) {
-            assert(amount != 0, 'Amount cannot be 0');
-            self.balance.write(self.balance.read() + amount);
-        }
+// -----------------------------------------------------------------------------
+// Co-located Tests (compile only in test mode)
+// -----------------------------------------------------------------------------
+#[cfg(test)]
+pub(crate) mod tests;
 
-        fn get_balance(self: @ContractState) -> felt252 {
-            self.balance.read()
-        }
-    }
-}
+// -----------------------------------------------------------------------------
+// Custom Types and Domain Aliases
+// -----------------------------------------------------------------------------
+pub mod types;
