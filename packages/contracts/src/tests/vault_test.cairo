@@ -115,6 +115,7 @@ fn test_vault_init_correct_owner() {
 #[test]
 fn test_vault_deposit_empty_mints_shares() {
     // TEST-ID: TEST-VAULT-DEPOSIT-EMPTY-001
+    // TEST-ID: TEST-VAULT-001
     // It should mint shares on empty vault
     let (vault, wbtc, _) = setup_vault();
     mint_and_approve(wbtc, user_a(), vault, ONE_WBTC);
@@ -145,6 +146,7 @@ fn test_vault_deposit_updates_total_assets() {
 #[should_panic(expected: ('ZERO_ASSETS',))]
 fn test_vault_deposit_zero_reverts() {
     // TEST-ID: TEST-VAULT-DEPOSIT-ZERO-001
+    // TEST-ID: TEST-VAULT-003
     // It should revert with ZeroAssets
     let (vault, _, _) = setup_vault();
 
@@ -211,6 +213,7 @@ fn test_vault_mint_zero_reverts() {
 #[test]
 fn test_vault_withdraw_success() {
     // TEST-ID: TEST-VAULT-WITHDRAW-SUCCESS-001
+    // TEST-ID: TEST-VAULT-002
     // It should burn shares and transfer assets
     let (vault, wbtc, _) = setup_vault();
     mint_and_approve(wbtc, user_a(), vault, ONE_WBTC);
@@ -282,6 +285,7 @@ fn test_vault_redeem_zero_reverts() {
 #[test]
 fn test_vault_preview_deposit() {
     // TEST-ID: TEST-VAULT-PREVIEW-001
+    // TEST-ID: TEST-VAULT-004
     let (vault, _, _) = setup_vault();
     let view = IERC4626ViewDispatcher { contract_address: vault };
 
@@ -354,7 +358,9 @@ fn test_vault_emergency_no_strategy_returns_zero() {
 
 #[test]
 fn test_vault_pause_unpause() {
-    // TEST-ID: TEST-VAULT-PAUSE-SUCCESS-001, TEST-VAULT-UNPAUSE-SUCCESS-001
+    // TEST-ID: TEST-VAULT-PAUSE-SUCCESS-001
+    // TEST-ID: TEST-VAULT-UNPAUSE-SUCCESS-001
+    // TEST-ID: TEST-VAULT-007
     let (vault, _, owner) = setup_vault();
     let view = IERC4626ViewDispatcher { contract_address: vault };
 
@@ -376,4 +382,64 @@ fn test_vault_pause_unauthorized() {
     start_cheat_caller_address(vault, attacker());
     IVaultDispatcher { contract_address: vault }.pause();
     stop_cheat_caller_address(vault);
+}
+
+// =============================================================================
+// Multiple Depositors and Rounding Tests [TEST-VAULT-005]
+// =============================================================================
+
+#[test]
+fn test_vault_multiple_depositors() {
+    // TEST-ID: TEST-VAULT-DEPOSIT-EXISTING-001
+    // TEST-ID: TEST-VAULT-005
+    // It should mint shares according to exchange rate for existing deposits
+    let (vault, wbtc, _) = setup_vault();
+    let user_b: ContractAddress = 'user_b'.try_into().unwrap();
+
+    // User A deposits first
+    mint_and_approve(wbtc, user_a(), vault, ONE_WBTC);
+    start_cheat_caller_address(vault, user_a());
+    let shares_a = IERC4626MutableDispatcher { contract_address: vault }.deposit(ONE_WBTC, user_a());
+    stop_cheat_caller_address(vault);
+
+    // User B deposits second
+    mint_and_approve(wbtc, user_b, vault, ONE_WBTC);
+    start_cheat_caller_address(vault, user_b);
+    let shares_b = IERC4626MutableDispatcher { contract_address: vault }.deposit(ONE_WBTC, user_b);
+    stop_cheat_caller_address(vault);
+
+    assert(shares_a > 0, 'A should have shares');
+    assert(shares_b > 0, 'B should have shares');
+
+    let erc20 = IERC20Dispatcher { contract_address: vault };
+    assert(erc20.total_supply() == shares_a + shares_b, 'total supply');
+}
+
+// =============================================================================
+// ERC20 Share Operations [TEST-VAULT-006]
+// =============================================================================
+
+#[test]
+fn test_vault_share_transfer() {
+    // TEST-ID: TEST-VAULT-ERC20-TRANSFER-001
+    // TEST-ID: TEST-VAULT-006
+    // It should allow share transfers
+    let (vault, wbtc, _) = setup_vault();
+    let user_b: ContractAddress = 'user_b'.try_into().unwrap();
+
+    // User A deposits
+    mint_and_approve(wbtc, user_a(), vault, ONE_WBTC);
+    start_cheat_caller_address(vault, user_a());
+    let shares = IERC4626MutableDispatcher { contract_address: vault }.deposit(ONE_WBTC, user_a());
+    stop_cheat_caller_address(vault);
+
+    // Transfer shares to user B
+    let transfer_amount = shares / 2;
+    start_cheat_caller_address(vault, user_a());
+    IERC20Dispatcher { contract_address: vault }.transfer(user_b, transfer_amount);
+    stop_cheat_caller_address(vault);
+
+    let erc20 = IERC20Dispatcher { contract_address: vault };
+    assert(erc20.balance_of(user_b) == transfer_amount, 'B balance');
+    assert(erc20.balance_of(user_a()) == shares - transfer_amount, 'A balance');
 }

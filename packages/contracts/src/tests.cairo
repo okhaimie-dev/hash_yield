@@ -10,14 +10,13 @@ pub mod helper;
 
 // Mock contracts for testing
 pub mod mocks;
-pub mod strategy_test;
 
 // Unit tests
 pub mod vault_test;
-// Integration tests (placeholder - implement in Gate 4 part 2)
-// pub mod integration_test;
+pub mod strategy_test;
 
-// Security tests (placeholder - implement in Gate 4 part 2)
-// pub mod security_test;
+// Integration tests
+pub mod integration_test;
 
-
+// Security tests
+pub mod security_test;
