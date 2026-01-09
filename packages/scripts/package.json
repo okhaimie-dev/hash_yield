@@ -1,0 +1,26 @@
+{
+  "name": "@hash_yield/scripts",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Deployment and development scripts for HashYield",
+  "scripts": {
+    "devnet": "bun run src/devnet.ts",
+    "devnet:fork": "bun run src/devnet.ts --fork",
+    "deploy:mocks": "bun run src/deploy-mocks.ts",
+    "deploy:vault": "bun run src/deploy-vault.ts",
+    "deploy:all": "bun run src/deploy-all.ts",
+    "faucet": "bun run src/faucet.ts",
+    "check-devnet": "bun run src/check-devnet.ts",
+    "sync:abis": "bun run src/extract-abis.ts",
+    "sync:addresses": "bun run src/sync-addresses.ts",
+    "sync:all": "bun run src/sync-addresses.ts && bun run src/extract-abis.ts"
+  },
+  "dependencies": {
+    "starknet": "^9.2.1",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "5.9.2"
+  }
+}
