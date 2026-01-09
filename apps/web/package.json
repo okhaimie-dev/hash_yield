@@ -5,7 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3000 --experimental-https",
+    "dev:local": "NEXT_PUBLIC_STARKNET_ENV=local next dev --port 3000 --experimental-https",
+    "dev:staging": "NEXT_PUBLIC_STARKNET_ENV=sepolia next dev --port 3000 --experimental-https",
     "build": "next build",
+    "build:staging": "NEXT_PUBLIC_STARKNET_ENV=sepolia next build",
+    "build:prod": "NEXT_PUBLIC_STARKNET_ENV=mainnet next build",
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit"

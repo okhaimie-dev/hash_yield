@@ -13,6 +13,7 @@ assert_macros = "2.13.1"
 
 [[target.starknet-contract]]
 sierra = true
+casm = true
 
 [scripts]
 test = "snforge test"
@@ -29,8 +30,20 @@ sort-module-level-items = true
 # unstable-add-statements-functions-debug-info = true
 # inlining-strategy = "avoid"
 
-# Fork testing configuration (for future Vesu integration tests)
+# Fork testing configuration for Vesu integration tests
+# Uncomment and configure when running fork tests against mainnet
+[[tool.snforge.fork]]
+name = "MAINNET"
+url = "https://api.cartridge.gg/x/starknet/mainnet"
+block_id.tag = "latest"
+
+# Alternative RPC providers (comment/uncomment as needed):
 # [[tool.snforge.fork]]
-# name = "MAINNET"
+# name = "MAINNET_BLAST"
 # url = "https://starknet-mainnet.public.blastapi.io"
+# block_id.tag = "latest"
+
+# [[tool.snforge.fork]]
+# name = "MAINNET_ALCHEMY"
+# url = "https://starknet-mainnet.g.alchemy.com/v2/YOUR_API_KEY"
 # block_id.tag = "latest"
