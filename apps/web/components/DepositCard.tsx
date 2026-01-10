@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TransactionState } from "../types";
+import { useWalletBalance, useVaultShares, useDeposit, useWithdraw } from "../hooks";
 
 interface DepositCardProps {
   sharePrice: number;
@@ -8,25 +9,55 @@ interface DepositCardProps {
 const DepositCard: React.FC<DepositCardProps> = ({ sharePrice }) => {
   const [activeTab, setActiveTab] = useState<"deposit" | "withdraw">("deposit");
   const [amount, setAmount] = useState("");
-  const [txState, setTxState] = useState<TransactionState>(
-    TransactionState.IDLE,
-  );
 
-  const walletBalance = 0.452;
-  // TODO: wire real vault share balance from backend or onchain data
-  // const vaultShares = 0.0;
+  // Fetch user balances
+  const { data: walletBalance = 0, isLoading: isLoadingBalance } = useWalletBalance();
+  // Vault shares available for future use (e.g., showing user's share balance)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: vaultShares = 0 } = useVaultShares();
+
+  // Transaction mutations
+  const deposit = useDeposit();
+  const withdraw = useWithdraw();
 
   const estimatedShares = amount ? parseFloat(amount) / sharePrice : 0;
 
+  // Determine transaction state based on active mutation
+  const activeMutation = activeTab === "deposit" ? deposit : withdraw;
+  const txState = activeMutation.isPending
+    ? TransactionState.LOADING
+    : activeMutation.isSuccess
+      ? TransactionState.SUCCESS
+      : TransactionState.IDLE;
+
   const handleAction = () => {
-    setTxState(TransactionState.LOADING);
-    setTimeout(() => {
-      setTxState(TransactionState.SUCCESS);
-      setTimeout(() => {
-        setTxState(TransactionState.IDLE);
-        setAmount("");
-      }, 3000);
-    }, 2000);
+    if (!amount || parseFloat(amount) <= 0) return;
+
+    if (activeTab === "deposit") {
+      deposit.mutate(
+        { amount },
+        {
+          onSuccess: () => {
+            setTimeout(() => {
+              deposit.reset();
+              setAmount("");
+            }, 3000);
+          },
+        }
+      );
+    } else {
+      withdraw.mutate(
+        { amount },
+        {
+          onSuccess: () => {
+            setTimeout(() => {
+              withdraw.reset();
+              setAmount("");
+            }, 3000);
+          },
+        }
+      );
+    }
   };
 
   return (
@@ -61,12 +92,16 @@ const DepositCard: React.FC<DepositCardProps> = ({ sharePrice }) => {
           <span className="text-slate-400">Amount to {activeTab}</span>
           <span className="text-slate-400">
             Balance:{" "}
-            <button
-              className="text-[#f7931a] hover:underline"
-              onClick={() => setAmount(walletBalance.toString())}
-            >
-              {walletBalance} BTC
-            </button>
+            {isLoadingBalance ? (
+              <span>Loading...</span>
+            ) : (
+              <button
+                className="text-[#f7931a] hover:underline"
+                onClick={() => setAmount(walletBalance.toString())}
+              >
+                {walletBalance.toFixed(6)} BTC
+              </button>
+            )}
           </span>
         </div>
 

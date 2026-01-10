@@ -1,10 +1,21 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXT_PUBLIC_STARKNET_ENV",
+    "NEXT_PUBLIC_API_URL",
+    "DEPLOY_ENV",
+    "LOCAL_RPC_URL",
+    "FORK_RPC_URL",
+    "MAINNET_RPC_URL",
+    "DEPLOYER_ADDRESS",
+    "DEPLOYER_PRIVATE_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "target/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -15,12 +26,59 @@
     "test": {
       "cache": false
     },
+    "test:unit": {
+      "cache": false
+    },
+    "test:fork": {
+      "cache": false,
+      "env": ["MAINNET_RPC_URL"]
+    },
     "check-types": {
       "dependsOn": ["^check-types"]
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "dev:local": {
+      "cache": false,
+      "persistent": true,
+      "env": ["NEXT_PUBLIC_STARKNET_ENV"]
+    },
+    "devnet": {
+      "cache": false,
+      "persistent": true
+    },
+    "devnet:fork": {
+      "cache": false,
+      "persistent": true,
+      "env": ["FORK_RPC_URL"]
+    },
+    "deploy:mocks": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["DEPLOY_ENV", "LOCAL_RPC_URL"]
+    },
+    "deploy:vault": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["DEPLOY_ENV", "LOCAL_RPC_URL", "FORK_RPC_URL"]
+    },
+    "deploy:all": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["DEPLOY_ENV", "LOCAL_RPC_URL"]
+    },
+    "faucet": {
+      "cache": false,
+      "env": ["DEPLOY_ENV", "LOCAL_RPC_URL"]
+    },
+    "sync-addresses": {
+      "cache": false,
+      "env": ["DEPLOY_ENV"]
+    },
+    "check-devnet": {
+      "cache": false
     }
   }
 }

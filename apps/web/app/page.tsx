@@ -18,11 +18,16 @@ import DepositCard from "../components/DepositCard";
 import YieldCard from "../components/YieldCard";
 import StrategyFlow from "../components/StrategyFlow";
 import { ALLOCATION_STRATEGY, RISKS } from "../constants";
+import { useVaultStats } from "../hooks";
 
 export default function Home() {
   const [view, setView] = useState<"landing" | "vault">("landing");
 
-  const vaultStats = {
+  // Fetch vault statistics
+  const { data: vaultStatsData, isLoading, error } = useVaultStats();
+
+  // Use fetched data or fallback to defaults
+  const vaultStats = vaultStatsData || {
     apyBase: 3.2,
     apyBonus: 1.65,
     tvlBtc: 84.52,
@@ -124,7 +129,41 @@ export default function Home() {
     </div>
   );
 
-  const VaultDashboard = () => (
+  const VaultDashboard = () => {
+    // Show loading state while fetching vault data
+    if (isLoading) {
+      return (
+        <div className="animate-fade-in flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-[#f7931a]/20 border-t-[#f7931a] rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-400">Loading vault data...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Show error state if data fetch failed
+    if (error && !vaultStatsData) {
+      return (
+        <div className="animate-fade-in flex items-center justify-center min-h-[400px]">
+          <div className="text-center glass-card p-8 rounded-2xl">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2">Unable to Load Vault Data</h3>
+            <p className="text-slate-400 mb-4">
+              {error instanceof Error ? error.message : "Please try again later"}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-2 bg-[#f7931a] hover:bg-[#e08517] text-white rounded-lg font-medium transition-all"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
     <div className="animate-fade-in">
       <div className="mb-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -289,7 +328,8 @@ export default function Home() {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 selection:bg-[#f7931a]/30">

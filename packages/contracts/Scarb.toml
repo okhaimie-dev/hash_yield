@@ -1,19 +1,19 @@
 [package]
-name = "contracts"
+name = "hash_yield"
 version = "0.1.0"
 edition = "2024_07"
 
-# See more keys and their definitions at https://docs.swmansion.com/scarb/docs/reference/manifest.html
-
 [dependencies]
-starknet = "2.15.0"
+starknet = "2.13.1"
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v3.0.0" }
 
 [dev-dependencies]
-snforge_std = "0.51.1"
-assert_macros = "2.15.0"
+snforge_std = "0.43.1"
+assert_macros = "2.13.1"
 
 [[target.starknet-contract]]
 sierra = true
+casm = true
 
 [scripts]
 test = "snforge test"
@@ -21,32 +21,29 @@ test = "snforge test"
 [tool.scarb]
 allow-prebuilt-plugins = ["snforge_std"]
 
-# Visit https://foundry-rs.github.io/starknet-foundry/appendix/scarb-toml.html for more information
+[tool.fmt]
+sort-module-level-items = true
 
-# [tool.snforge]                                             # Define `snforge` tool section
-# exit_first = true                                          # Stop tests execution immediately upon the first failure
-# fuzzer_runs = 1234                                         # Number of runs of the random fuzzer
-# fuzzer_seed = 1111                                         # Seed for the random fuzzer
+# Uncomment for coverage support:
+# [profile.dev.cairo]
+# unstable-add-statements-code-locations-debug-info = true
+# unstable-add-statements-functions-debug-info = true
+# inlining-strategy = "avoid"
 
-# [[tool.snforge.fork]]                                      # Used for fork testing
-# name = "SOME_NAME"                                         # Fork name
-# url = "http://your.rpc.url"                                # Url of the RPC provider
-# block_id.tag = "latest"                                    # Block to fork from (block tag)
+# Fork testing configuration for Vesu integration tests
+# Uncomment and configure when running fork tests against mainnet
+[[tool.snforge.fork]]
+name = "MAINNET"
+url = "https://api.cartridge.gg/x/starknet/mainnet"
+block_id.tag = "latest"
+
+# Alternative RPC providers (comment/uncomment as needed):
+# [[tool.snforge.fork]]
+# name = "MAINNET_BLAST"
+# url = "https://starknet-mainnet.public.blastapi.io"
+# block_id.tag = "latest"
 
 # [[tool.snforge.fork]]
-# name = "SOME_SECOND_NAME"
-# url = "http://your.second.rpc.url"
-# block_id.number = "123"                                    # Block to fork from (block number)
-
-# [[tool.snforge.fork]]
-# name = "SOME_THIRD_NAME"
-# url = "http://your.third.rpc.url"
-# block_id.hash = "0x123"                                    # Block to fork from (block hash)
-
-# [profile.dev.cairo]                                        # Configure Cairo compiler
-# unstable-add-statements-code-locations-debug-info = true   # Should be used if you want to use coverage
-# unstable-add-statements-functions-debug-info = true        # Should be used if you want to use coverage/profiler
-# inlining-strategy = "avoid"                                # Should be used if you want to use coverage
-
-# [features]                                                 # Used for conditional compilation
-# enable_for_tests = []                                      # Feature name and list of other features that should be enabled with it
+# name = "MAINNET_ALCHEMY"
+# url = "https://starknet-mainnet.g.alchemy.com/v2/YOUR_API_KEY"
+# block_id.tag = "latest"
